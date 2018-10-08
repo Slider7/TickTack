@@ -2,12 +2,8 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  <title>Krestiki-Noliki</title>
-  
-
-<!-- <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>  -->
-  
-<link rel="stylesheet" href="tt-style.css">   
+  <title>Игра крестики-нолики</title>
+  <link rel="stylesheet" href="tt-style.css">   
 </head>
 
 <body>
@@ -27,347 +23,129 @@
 </div>
 
 <script>
+  var deskArr = [], xArr = [], oArr = [];
+  var val = 0;  
+  var deg = 0;        
+  var canvas = document.getElementById("myCanvas");
+	canvas.addEventListener('click', drawInCell, false);
+  drawDesk();
 
-    var deskArr = [];
-		function emptyDeskArr(){
-		    deskArr = [];
-		    for (var i = 0; i <= 2; i++) {
-				  deskArr.push(['*', '*', '*']);
-				};
-			};
-			
-		var mode = 1, val = 0;
-    var deg = 0;		
-		var canvas = document.getElementById("myCanvas");
-
-		function drawDesk(){
-      var c = document.getElementById("myCanvas");
-			var ctx = c.getContext("2d");
-			ctx.clearRect(0, 0, c.width, c.height);
-			ctx.strokeStyle= "#000";
-			ctx.lineWidth = 4;
-			ctx.beginPath();
-			ctx.moveTo(c.width / 3, 0);
-			ctx.lineTo(c.width / 3, c.height);
-			ctx.moveTo((c.width / 3) * 2, 0);
-			ctx.lineTo((c.width / 3) * 2, c.height);
-			ctx.moveTo(0, c.height / 3);
-			ctx.lineTo(c.width, c.height / 3);
-			ctx.moveTo(0, (c.height / 3) * 2);
-			ctx.lineTo(c.width, (c.height / 3) * 2);
-			ctx.stroke();
-			ctx.closePath();
-			mode = 1;
-			emptyDeskArr();
-		};
-
-		drawDesk();
-		canvas.addEventListener('click', drawInCell, false);
-
-  function checkTurn(arr) {
-     for (var i = 0; i <= 2; i++) 
-		 for (var j = 0; j <= 2; j++){
-       if (arr[i][j] == '*') { return i;}
-     };
-     return -1;
-	};
-		
-		function drawCircle(x, y){
-      var c = document.getElementById("myCanvas");
-			var ctx = c.getContext("2d");
-			ctx.strokeStyle= "#000";
-			ctx.lineWidth = 4;
-			deg = 0;
-				function loop(){
-            // change dynamic
-           deg = deg + 0.5;
-           ctx.beginPath();
-           ctx.arc(147*x + 73, 145*y + 73, 40, 0, deg);
-           ctx.stroke();
-						// stop the the animation
-            if (deg > Math.PI*2 + 0.2){
-                clearInterval(myTimer);
-								ctx.closePath();
-								showResult();
-            };
-        };
-        var myTimer = setInterval(loop, 20);  
-			/*
-			ctx.beginPath();
-			ctx.arc(147*x + 73, 145*y + 73, 40, 0, 2*Math.PI);
-			ctx.stroke();
-			ctx.closePath();*/
-		};
-		
-		function drawX(x, y){
-      var c = document.getElementById("myCanvas");
-			var ctx = c.getContext("2d");
-			ctx.strokeStyle= "#000";
-			ctx.lineWidth = 4;
-			ctx.beginPath();
-			ctx.moveTo(147*x + 30, 146*y + 30);
-			ctx.lineTo(147*x + 110, 146*y + 110);
-			ctx.moveTo(147*x + 30, 146*y + 110);
-			ctx.lineTo(147*x + 110, 146*y + 30);
-			ctx.stroke();
-			ctx.closePath();
-		};
-		
-		function drawInCell(event) {
-				var x = event.layerX; // canvas position: relative; 
-				var y = event.layerY;
-				x = Math.floor(x / 146);
-				y = Math.floor(y / 146);
-				if (deskArr[x][y] == '*') {
-          if (mode == 1) { 
-						  drawX(x, y);
-							deskArr[x][y] = mode.toString();
-							showResult();
-							if (val == 1) {compTurn();};
-						};
-          						
-					if (mode == 0 && val == 0) {
-						deskArr[x][y] = mode.toString();
-						drawCircle(x, y);
-						};
-			    if (val == 0) mode = 1 - mode;
-				};
-
-		};			
-
-		function checkDeskArr(tArray){
-			var h = 0, v = 0, d = 0, stv = '', sth = '', std = '', std_ = '', arr = [];
-				for (var i = 0; i <= 2; i++){
-				  sth = ''; stv = ''; std = ''; std_ = '';
-					for (var j = 0; j <= 2; j++)
-					{
-						sth = sth + tArray[i][j];
-						stv = stv + tArray[j][i];
-						std_ = std_ + tArray[j][2-j];
-					  std = std + tArray[j][j];
-					};
-					arr.push(sth);
-					arr.push(stv);
-					arr.push(std);
-				  arr.push(std_);
-				};
-			if (arr.indexOf('000') >= 0) return 'Noliki wins!';
-			if (arr.indexOf('111') >= 0) return 'Krestiki wins!';
-			if (arr.indexOf('000') < 0 && arr.indexOf('111') < 0) return 'DRAW';
-		};
-	  
-		function handleClick(radItem) {
-			var oldVal = val;
-			val = radItem.value;
-			if (val != oldVal) {
-				drawDesk();
-			};
-		};
-		
-		function compTurn(){
-		  var flag = 0; mode = 0; arr = deskArr;
-		  for (var i = 0; i <= 2; i++)
-			{  
-				for (var j = 0; j <= 2; j++){
-					if (arr[i][j] == '*'){
-	  				  arr[i][j] = '0';
-						  if (checkDeskArr(arr) == "Noliki wins!"){ 
-							  deskArr[i][j] = '0';
-								drawCircle(i, j);
-								arr[i][j] = '0';
-							  mode = 1;
-								flag = 2;
-							  break;
-							};
-							if (flag != 2) arr[i][j] = '*';
-						}; 
-				};		
-			  if (mode == 1) break;
-			};
-			
-			for (var i = 0; i <= 2; i++)
-			{  
-				for (var j = 0; j <= 2; j++){
-					if (arr[i][j] == '*'){
-	  				  arr[i][j] = '1';
-						  if (checkDeskArr(arr) == "Krestiki wins!"){ 
-								arr[i][j] = '0';
-								deskArr[i][j] = '0';
-								drawCircle(i, j);
-							  mode = 1;
-								flag = 1;
-							  break;
-							};
-							if (arr[i][j] != '0') arr[i][j] = '*';
-						}; 
-				};		
-			  if (mode == 1) break;
-			};
-			
-      if (flag == 0){
-				for (var i = 0; i <= 2; i++){  
-					for (var j = 0; j <= 2; j++){
-						if (deskArr[i][j] == '*'){
-									deskArr[i][j] = '0';
-									drawCircle(i, j);
-									mode = 1;
-									break;
-								};
-							};
-					if (mode == 1) break;
-				};
-			}; 
-     // document.getElementById("txt").innerHTML = deskArr.join(' ');			
-		};
-
-		function showResult(){
-			if (checkDeskArr(deskArr) != "DRAW") {
-			  alert(checkDeskArr(deskArr));
-				drawDesk();
-				return 1;
-				}
-			else if (checkTurn(deskArr) < 0) {
-				alert("DRAW");
-				drawDesk();
-				return 0;
-				};
-      return -1;				
-		};
-		
-   
-
-
-
-
-
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;};
- 
-      var deskArr = [], xArr = [], oArr = [];
-  function emptyDeskArr(){
-          deskArr = [];
-        xArr = []; oArr = [];
-          for (var i = 0; i <= 2; i++) {
-          deskArr.push(['*', '*', '*']);
-        };
+	function getRandomInt(min, max) {
+  	return Math.floor(Math.random() * (max - min)) + min;
   };
-  
-      var val = 0;
-    var deg = 0;        
-      var canvas = document.getElementById("myCanvas");
+ 
+  function emptyDeskArr(){
+		deskArr = []; xArr = []; oArr = [];
+		for (var i = 0; i <= 2; i++) {
+		 deskArr.push(['*', '*', '*']);
+		};
+  };
  
   function drawDesk(){
-        emptyDeskArr();
-      var c = document.getElementById("myCanvas");
-  var ctx = c.getContext("2d");
-  ctx.clearRect(0, 0, c.width, c.height);
-  ctx.strokeStyle= "#000";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(c.width / 3, 0);
-  ctx.lineTo(c.width / 3, c.height);
-  ctx.moveTo((c.width / 3) * 2, 0);
-  ctx.lineTo((c.width / 3) * 2, c.height);
-  ctx.moveTo(0, c.height / 3);
-  ctx.lineTo(c.width, c.height / 3);
-  ctx.moveTo(0, (c.height / 3) * 2);
-  ctx.lineTo(c.width, (c.height / 3) * 2);
-  ctx.stroke();
-  ctx.closePath();
-      if (val == 1) {
-    var i = getRandomInt(0, 2),
-     j = getRandomInt(0, 2);
-    deskArr[i][j] = '1';
-        xArr.push([i, j]);
-        drawX(i, j);
-  };
-      };
+    emptyDeskArr();
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+		  ctx.clearRect(0, 0, c.width, c.height);
+		  ctx.strokeStyle= "#000";
+		  ctx.lineWidth = 4;
+		  ctx.beginPath();
+		  ctx.moveTo(c.width / 3, 0);
+		  ctx.lineTo(c.width / 3, c.height);
+		  ctx.moveTo((c.width / 3) * 2, 0);
+		  ctx.lineTo((c.width / 3) * 2, c.height);
+		  ctx.moveTo(0, c.height / 3);
+		  ctx.lineTo(c.width, c.height / 3);
+		  ctx.moveTo(0, (c.height / 3) * 2);
+		  ctx.lineTo(c.width, (c.height / 3) * 2);
+		  ctx.stroke();
+		  ctx.closePath();
+    if (val == 1) {
+    	var i = getRandomInt(0, 2), j = getRandomInt(0, 2);
+    	deskArr[i][j] = '1';
+      xArr.push([i, j]);
+      drawX(i, j);
+  	};
+  }; /*-- drawDesk()--*/
  
-      drawDesk();
-      canvas.addEventListener('click', drawInCell, false);
- 
-  function checkTurn(arr) {
+  function checkTurn(arr) { /*проверяем есть ли еще ходы*/
      for (var i = 0; i <= 2; i++) 
        for (var j = 0; j <= 2; j++){
-       if (arr[i][j] == '*') { return i;}
-     };
+         if (arr[i][j] == '*') { return i;}
+       };
      return -1;
-      };
+  };
       
-  function drawCircle(x, y, col){
-      var c = document.getElementById("myCanvas");
-  var ctx = c.getContext("2d");
-  ctx.strokeStyle= "#000";
-  if (col == 1) ctx.strokeStyle= "#00f";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.arc(147*x + 73, 145*y + 73, 40, 0, Math.PI*2);
-  ctx.stroke();
-  ctx.closePath();
-  if (col == 0) {deskArr[x][y] = '0'; oArr.push([x, y]);};
-      };
+  function drawCircle(x, y, col){ //рисуем нолик заданного цвета
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+	  ctx.strokeStyle= "#000";
+	  if (col == 1) ctx.strokeStyle= "#00f";
+	  ctx.lineWidth = 4;
+	  ctx.beginPath();
+	  ctx.arc(147*x + 73, 145*y + 73, 40, 0, Math.PI*2);
+	  ctx.stroke();
+	  ctx.closePath();
+	  if (col == 0) {deskArr[x][y] = '0'; oArr.push([x, y]);};
+  };
       
-  function drawX(x, y, col){
-      var c = document.getElementById("myCanvas");
-  var ctx = c.getContext("2d");
-  ctx.strokeStyle= "#000";
-  if (col == 1) ctx.strokeStyle= "#00f";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(147*x + 30, 146*y + 30);
-  ctx.lineTo(147*x + 110, 146*y + 110);
-  ctx.moveTo(147*x + 30, 146*y + 110);
-  ctx.lineTo(147*x + 110, 146*y + 30);
-  ctx.stroke();
-  ctx.closePath();
-  if (col == 0) {deskArr[x][y] = '1';      xArr.push([x, y]);};
-      };
+  function drawX(x, y, col){//рисуем крестик заданного цвета
+	  var c = document.getElementById("myCanvas");
+	  var ctx = c.getContext("2d");
+	  ctx.strokeStyle= "#000";
+	  if (col == 1) ctx.strokeStyle= "#00f";
+	  ctx.lineWidth = 4;
+	  ctx.beginPath();
+	  ctx.moveTo(147*x + 30, 146*y + 30);
+	  ctx.lineTo(147*x + 110, 146*y + 110);
+	  ctx.moveTo(147*x + 30, 146*y + 110);
+	  ctx.lineTo(147*x + 110, 146*y + 30);
+	  ctx.stroke();
+	  ctx.closePath();
+	  if (col == 0) {
+	  	deskArr[x][y] = '1';
+	  	xArr.push([x, y]);
+	  };
+  };
       
-  function drawInCell(event) {
-        var x = event.layerX; // canvas position: relative; 
-        var y = event.layerY;
-        x = Math.floor(x / 146);
-        y = Math.floor(y / 146);
-        if (deskArr[x][y] == '*') {
-    if (val == 0) { 
-       drawX(x, y, 0);
-     };
-    if      (val == 1) {
-     drawCircle(x, y, 0);
-     };
-        if (showResult() < 0) compTurn(val.toString());
-        };
-      };         
+  function drawInCell(event) { //отрисовка в выбранную ячейку 
+	  var x = event.layerX; 
+	  var y = event.layerY;
+	  x = Math.floor(x / 146);
+	  y = Math.floor(y / 146);
+	  if (deskArr[x][y] == '*') {
+			if (val == 0) { drawX(x, y, 0); };
+			if (val == 1) { drawCircle(x, y, 0); };
+			if (showResult() < 0) compTurn(val.toString());
+	  };
+  };         
  
-  function checkDeskArr(tArray){
-  var h = 0, v = 0, d = 0, stv = '', sth = '', std = '', std_ = '', arr = [];
-        for (var i = 0; i <= 2; i++){
-          sth = ''; stv = ''; std = ''; std_ = '';
-        for (var j = 0; j <= 2; j++)
-        {
-     sth = sth + tArray[i][j];
-     stv = stv + tArray[j][i];
-     std_ = std_ + tArray[j][2-j];
-          std = std + tArray[j][j];
-        };
-        arr.push(sth);
+  function checkDeskArr(tArray){ //проверка массива значений на доске
+    var h = 0, v = 0, d = 0, stv = '', sth = '', std = '', std_ = '', arr = [];
+    for (var i = 0; i <= 2; i++){
+      sth = ''; stv = ''; std = ''; std_ = '';
+    	for (var j = 0; j <= 2; j++){ //собираем значения 0/1 в соотв. строку sth - горизонталь, stv-вертикаль, и 2 диагонали
+				sth = sth + tArray[i][j];
+				stv = stv + tArray[j][i];
+				std_ = std_ + tArray[j][2-j];
+        std = std + tArray[j][j];
+      };
+        arr.push(sth); //добавляем собранные строки в массив
         arr.push(stv);
         arr.push(std);
-          arr.push(std_);
-        };
-  if (arr.indexOf('000') >= 0) return 'O wins!';
-  if (arr.indexOf('111') >= 0) return 'X wins!';
-  if (arr.indexOf('000') < 0 && arr.indexOf('111') < 0) return 'DRAW';
-      };
-        
-  function handleClick(radItem) {
-  var oldVal = val;
-  val = radItem.value;
-  if (val != oldVal) {
-        drawDesk();
+        arr.push(std_);
+    };
+	  if (arr.indexOf('000') >= 0) return 'O wins!'; //проверяем наличие "победных" строк 000 / 111 в массиве
+	  if (arr.indexOf('111') >= 0) return 'X wins!';
+	  if (arr.indexOf('000') < 0 && arr.indexOf('111') < 0) return 'DRAW';
   };
-      };
+        
+  function handleClick(radItem) { //переключатель режима игры
+	  var oldVal = val;
+	  val = radItem.value;
+	  if (val != oldVal) {
+	        drawDesk();
+	  };
+  };
       
   function compTurn(xo){
         var flag = 0; arr = deskArr;
