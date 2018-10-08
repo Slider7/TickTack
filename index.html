@@ -21,15 +21,16 @@
     </canvas>
   </div>
   
-  <div id="result" class="text-center">
-   	
+  <div class="text-center">
+   	<h3 id="result" class="text-center"></h3>
+   	<button id="restart" class="hidden" onclick="restart()">Начать заново</button>
   </div>
 </div>
 
 <script>
   var deskArr = [], xArr = [], oArr = [];
   var val = document.getElementById("radio1").value;  
-  var deg = 0;        
+  var state = 0;        
   var canvas = document.getElementById("myCanvas");
 	canvas.addEventListener('click', drawInCell, false);
   drawDesk();
@@ -118,15 +119,17 @@
   };
       
   function drawInCell(event) { //отрисовка в выбранную ячейку 
-	  var x = event.layerX; 
-	  var y = event.layerY;
-	  x = Math.floor(x / 146);
-	  y = Math.floor(y / 146);
-	  if (deskArr[x][y] == '*') {
-			if (val == 0) { drawX(x, y, 0); };
-			if (val == 1) { drawCircle(x, y, 0); };
-			if (showResult() < 0) compTurn(val.toString());
-	  };
+  	if (state == 0) {
+		  var x = event.layerX; 
+		  var y = event.layerY;
+		  x = Math.floor(x / 146);
+		  y = Math.floor(y / 146);
+		  if (deskArr[x][y] == '*') {
+				if (val == 0) { drawX(x, y, 0); };
+				if (val == 1) { drawCircle(x, y, 0); };
+				if (showResult() < 0) compTurn(val.toString()); 
+		  };
+		};
   };         
  
   function checkDeskArr(tArray){ //проверка массива значений на доске
@@ -153,10 +156,17 @@
 	  var oldVal = val;
 	  val = radio.value;
 	  if (val != oldVal) {
+	  	state = 0;
 	    drawDesk();
 	  };
   };
       
+  function restart() {
+  	state = 0;
+	  drawDesk();
+	  document.getElementById("restart").classList.add("hidden");
+  };
+
   function compTurn(xo){ //ход компьютера
     var flag = 0, arr = deskArr;
     /*перебор массива состояня доски - ищем клетку которая дает победу сразу после хода*/
@@ -222,16 +232,20 @@
     if (checkDeskArr(deskArr) != "DRAW") {
       if (checkDeskArr(deskArr) == "O wins!"){
       	drawRes(0, oArr);
-        document.getElementById("result").innerHTML = "<h3>Игра закончена - ПОБЕДА НОЛИКОВ.</h3>";	
+        document.getElementById("result").innerHTML = "<h3>Игра закончена - ПОБЕДА НОЛИКОВ.</h3>";
+        document.getElementById("restart").classList.remove("hidden");
       }; 
       if (checkDeskArr(deskArr) == "X wins!") {
       	drawRes(1, xArr);
-      	document.getElementById("result").innerHTML = "<h3>Игра закончена - ПОБЕДА КРЕСТИКОВ.</h3>";	
+      	document.getElementById("result").innerHTML = "<h3>Игра закончена - ПОБЕДА КРЕСТИКОВ.</h3>";
+      	document.getElementById("restart").classList.remove("hidden");	
       };
       return 1;
     } else 
       if (checkTurn(deskArr) < 0) {
+      	state = -1;
         document.getElementById("result").innerHTML = "<h3>Игра закончена - НИЧЬЯ.</h3>";	
+        document.getElementById("restart").classList.remove("hidden");
 //        drawDesk();
         return 0;
       };
@@ -240,6 +254,7 @@
       
   function drawRes(d, arr){ //отрисовка результата - по значения массива состояний
     var s1='', s2='', s3 = '', s4 = '';
+    state = -1;
     for (var i = 0; i < arr.length;  i++){
 	    s1 = s1 + arr[i][0].toString();
 	    s2 = s2 + arr[i][1].toString();
