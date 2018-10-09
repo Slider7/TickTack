@@ -1,14 +1,14 @@
 .maindiv{
+	width: 60vw;
   margin-left: auto;
   margin-right: auto;  
-  width: 440px;
-  height: 590px;
-  border: 1px;
   border-style: solid;
+  min-width: 450px;
 }
 
 .text-center{
   text-align: center;
+  padding-bottom: 8px; 
 }
 
 .header{
@@ -22,19 +22,19 @@
 
 .gametable{
 	margin-left: auto;
-  margin-right: auto;  
-	height: 440px;
-	position: relative;
+	margin-right: auto;
+	width: 437px;
+	height: 437px;
 }
 
 h2{
 	text-align: center;
-	margin-top: 15px;
+	margin-top: 10px;
 }
 
 #myCanvas{
-	position: relative;
   border:1px solid grey;
+
 }
 
 .hidden{
