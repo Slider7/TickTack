@@ -1,3 +1,3 @@
 # TickTack
-Игра в крестики нолики
-загружено на http://tik-tak.kemal.kz/
+Игра в крестики нолики. 
+Загружено на http://tik-tak.kemal.kz/
